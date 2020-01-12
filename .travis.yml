@@ -1,0 +1,20 @@
+language: node_js
+node_js:
+- stable
+npm: true
+script: 'true'
+cache:
+ directories:
+ - node_modules
+script:
+  - npm run build
+deploy:
+ provider: heroku
+ api_key:
+   secure: HEROKU_KEY
+ app: pure-bastion-53936
+ on:
+   repo: udugam/EQW_work_sample
+branches:
+  only:
+  - master
