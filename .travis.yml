@@ -11,7 +11,7 @@ script:
 deploy:
  provider: heroku
  api_key:
-   secure: HEROKU_KEY
+   secure: L+ZUcfX7cF+BtGVDO9P0bQiLLE1fq2JepQLCY1W22dwBANC2HrdkzKydshu0S3HDG2kF2gLBD8y5HiZMlJuG6KXglrL20++bR4evvoJfFWP/pXNydc7IoxbfOOJF6gdlwdv8L8rqmwm5ZiIHfh7CEAkiDY15Ml4Gq5X2zZgfqZShI9Um25mSj5hiYuogoJLDQ/SSiEQLVR1fThFEiRDgcl5yXEIjwHcuZEu8EqOk8fVic3kpwWVdmlAA+RFicMkQwMrSgjcvXv5Zegu7gTlofSB3U/XAA+QWhjMlFePB4/hvqPPO1DW5Hqr0iYUhgG5MdyXnjW+5dAoisE0DZxBkM/UEuG820+mmdRAOkYs0gSWg0lgzokp3ffMnOKQzhXfAzr5KzzacpOqfb6ysYB8Tg+F5oQOKe31Opm9tqoYpq2Vf0rDUwEcGyydIR5P2gUxd7yr4I++43Kl6GB7r7WlI6/4a+gQbCB9M3l6+MIi8DUjnAREOF0lqOidcgU8a+j686kXv1Rzhcd6czCyJrKUZR16TihK8EHtqXHhbou28Xaqv/ifzLSLxveCXy+NdfmKsIoxi6e75BeGCNH2+vel0ibN8Im+eoM20tuk2j7Mwz1S55GeGrI9PB5BfFsuObjP5DnytRNKkPrZYUXWertZ0EOVn/xu/t0hDwcas3kwNi5E=
  app: pure-bastion-53936
  on:
    repo: udugam/EQW_work_sample
