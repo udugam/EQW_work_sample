@@ -6,33 +6,10 @@ const app = express()
 // https://www.postgresql.org/docs/9.6/static/libpq-envars.html
 const pool = new pg.Pool()
 
-//Set allowable requests per minute
-const maxRequests = 10
-const maxTime = 5000
-
-//Create request que to keep track of all request times
-var reqQueue = []
-
 const queryHandler = (req, res, next) => {
   pool.query(req.sqlQuery).then((r) => {
     return res.json(r.rows || [])
   }).catch(next)
-}
-
-//Function that checks to see if request can pass through the API
-const checkRate = () => {
-  const requestTime = Date.now()
-  if(reqQueue.length===0) reqQueue.push(requestTime)
-  else if(requestTime-reqQueue[0]<=maxTime && reqQueue.length<maxRequests) {
-    reqQueue.push(requestTime)
-  } else if(requestTime-reqQueue[0]>maxTime && reqQueue.length<maxRequests) {
-    reqQueue.shift()
-    reqQueue.push(requestTime)
-  } else {
-    return false
-  }
-
-  return true
 }
 
 app.get('/', (req, res) => {
@@ -89,10 +66,6 @@ app.get('/poi', (req, res, next) => {
     SELECT *
     FROM public.poi;
   `
-  if(checkRate()===true) console.log(reqQueue)
-  else {
-    console.log("limit exceeded")
-  }
   return next()
 }, queryHandler)
 
