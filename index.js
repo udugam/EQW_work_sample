@@ -17,6 +17,11 @@ const queryHandler = (req, res, next) => {
     .catch(next);
 };
 
+//  Serve static assets
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('client/build'));
+}
+
 app.get('/', (req, res) => {
   //  Check to see if request is permitted before sending a response
   permitRequest = rateLimiter(reqLimit, reqTimeLimit);
