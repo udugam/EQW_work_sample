@@ -1,20 +1,28 @@
-const express = require('express')
-const pg = require('pg')
+const express = require('express');
+const pg = require('pg');
+const { rateLimiter } = require('./rateLimiter');
 
-const app = express()
+//  Define API rate limit here
+const reqLimit = 2;
+const reqTimeLimit = 1000;
+let permitRequest = true;
+
+const app = express();
 // configs come from standard PostgreSQL env vars
 // https://www.postgresql.org/docs/9.6/static/libpq-envars.html
-const pool = new pg.Pool()
+const pool = new pg.Pool();
 
 const queryHandler = (req, res, next) => {
-  pool.query(req.sqlQuery).then((r) => {
-    return res.json(r.rows || [])
-  }).catch(next)
-}
+  pool.query(req.sqlQuery).then((r) => res.json(r.rows || []))
+    .catch(next);
+};
 
 app.get('/', (req, res) => {
-  res.send('Welcome to EQ Works 😎')
-})
+  //  Check to see if request is permitted before sending a response
+  permitRequest = rateLimiter(reqLimit, reqTimeLimit);
+  if (permitRequest === true) res.send('Welcome to EQ Works 😎');
+  else res.status(429).send(`<h1>429 Too Many Requests!</h1> \n <h3>Please try again in ${reqTimeLimit / 1000} seconds</h3>`);
+});
 
 app.get('/events/hourly', (req, res, next) => {
   req.sqlQuery = `
@@ -22,9 +30,12 @@ app.get('/events/hourly', (req, res, next) => {
     FROM public.hourly_events
     ORDER BY date, hour
     LIMIT 168;
-  `
-  return next()
-}, queryHandler)
+  `;
+  //  Check if request is permitted before querying DB and sending response
+  permitRequest = rateLimiter(reqLimit, reqTimeLimit);
+  if (permitRequest === true) return next();
+  res.status(429).send(`<h1>429 Too Many Requests!</h1> \n <h3>Please try again in ${reqTimeLimit / 1000} seconds</h3>`);
+}, queryHandler);
 
 app.get('/events/daily', (req, res, next) => {
   req.sqlQuery = `
@@ -33,9 +44,12 @@ app.get('/events/daily', (req, res, next) => {
     GROUP BY date
     ORDER BY date
     LIMIT 7;
-  `
-  return next()
-}, queryHandler)
+  `;
+  //  Check if request is permitted before querying DB and sending response
+  permitRequest = rateLimiter(reqLimit, reqTimeLimit);
+  if (permitRequest === true) return next();
+  res.status(429).send(`<h1>429 Too Many Requests!</h1> \n <h3>Please try again in ${reqTimeLimit / 1000} seconds</h3>`);
+}, queryHandler);
 
 app.get('/stats/hourly', (req, res, next) => {
   req.sqlQuery = `
@@ -43,9 +57,12 @@ app.get('/stats/hourly', (req, res, next) => {
     FROM public.hourly_stats
     ORDER BY date, hour
     LIMIT 168;
-  `
-  return next()
-}, queryHandler)
+  `;
+  //  Check if request is permitted before querying DB and sending response
+  permitRequest = rateLimiter(reqLimit, reqTimeLimit);
+  if (permitRequest === true) return next();
+  res.status(429).send(`<h1>429 Too Many Requests!</h1> \n <h3>Please try again in ${reqTimeLimit / 1000} seconds</h3>`);
+}, queryHandler);
 
 app.get('/stats/daily', (req, res, next) => {
   req.sqlQuery = `
@@ -57,33 +74,39 @@ app.get('/stats/daily', (req, res, next) => {
     GROUP BY date
     ORDER BY date
     LIMIT 7;
-  `
-  return next()
-}, queryHandler)
+  `;
+  //  Check if request is permitted before querying DB and sending response
+  permitRequest = rateLimiter(reqLimit, reqTimeLimit);
+  if (permitRequest === true) return next();
+  res.status(429).send(`<h1>429 Too Many Requests!</h1> \n <h3>Please try again in ${reqTimeLimit / 1000} seconds</h3>`);
+}, queryHandler);
 
 app.get('/poi', (req, res, next) => {
   req.sqlQuery = `
     SELECT *
     FROM public.poi;
-  `
-  return next()
-}, queryHandler)
+  `;
+  //  Check if request is permitted before querying DB and sending response
+  permitRequest = rateLimiter(reqLimit, reqTimeLimit);
+  if (permitRequest === true) return next();
+  res.status(429).send(`<h1>429 Too Many Requests!</h1> \n <h3>Please try again in ${reqTimeLimit / 1000} seconds</h3>`);
+}, queryHandler);
 
 app.listen(process.env.PORT || 5555, (err) => {
   if (err) {
-    console.error(err)
-    process.exit(1)
+    console.error(err);
+    process.exit(1);
   } else {
-    console.log(`Running on ${process.env.PORT || 5555}`)
+    console.log(`Running on ${process.env.PORT || 5555}`);
   }
-})
+});
 
 // last resorts
 process.on('uncaughtException', (err) => {
-  console.log(`Caught exception: ${err}`)
-  process.exit(1)
-})
+  console.log(`Caught exception: ${err}`);
+  process.exit(1);
+});
 process.on('unhandledRejection', (reason, p) => {
-  console.log('Unhandled Rejection at: Promise', p, 'reason:', reason)
-  process.exit(1)
-})
+  console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+  process.exit(1);
+});

@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "pretest": "eslint --ignore-path .eslintignore .",
+    "test": "jest",
     "build": ""
   },
   "repository": {
@@ -21,9 +22,13 @@
   "homepage": "https://github.com/EQWorks/ws-product-nodejs#readme",
   "dependencies": {
     "express": "^4.15.3",
+    "jest": "^24.9.0",
     "pg": "^6.2.4"
   },
   "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.20.0",
     "nodemon": "^1.11.0"
   }
 }
