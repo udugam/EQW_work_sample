@@ -4,11 +4,13 @@
   "description": "API work samples",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "start": "if-env NODE_ENV=production && npm run start:prod || npm run start:dev",
+    "start:prod": "node server.js",
+    "start:dev": "concurrently \"nodemon --ignore 'client/*' \" \"npm run client \"",
+    "client": "cd client && npm run start",
     "pretest": "eslint --ignore-path .eslintignore .",
     "test": "jest",
-    "build": ""
+    "build": "cd client && npm install && npm run build"
   },
   "repository": {
     "type": "git",
@@ -22,6 +24,7 @@
   "homepage": "https://github.com/EQWorks/ws-product-nodejs#readme",
   "dependencies": {
     "express": "^4.15.3",
+    "if-env": "^1.0.4",
     "jest": "^24.9.0",
     "pg": "^6.2.4"
   },
@@ -29,6 +32,7 @@
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.20.0",
-    "nodemon": "^1.11.0"
+    "nodemon": "^1.11.0",
+    "concurrently": "^5.0.2"
   }
 }
