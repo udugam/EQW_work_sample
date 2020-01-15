@@ -1,13 +1,16 @@
     
-module.exports = {
-    reqHistory: [],
-    checkLimit: function(reqLimit, reqTimeLimit) {
-        this.reqHistory.push(Date.now())
-        if(this.reqHistory.length>reqLimit) return false
-        return true
-    },
-    init: function(){
-        this.reqHistory = []
-    }
+var reqHistory = []
 
+function rateLimiter(reqLimit, reqTimeLimit) {
+    let timeStamp = Date.now()
+    reqHistory.push(timeStamp)
+    console.log(reqHistory)
+    if(reqHistory.length===1) return true
+    if(reqHistory.length<reqLimit && timeStamp-reqHistory[0]<=reqTimeLimit) { //If number of requests is less than the Limit and less than the time Limit
+        return true
+    } else {
+        return false
+    }    
 }
+
+module.exports = rateLimiter
