@@ -22,7 +22,7 @@ test('Tests 5 requests in 1 second', async () => {
   expect(result).toBe(false);
 });
 
-test('Tests 4 requests in 5 seconds', async () => {
+test('Tests 4 requests in 1 second', async () => {
   clearReqHistory();
   for (let i = 0; i < 4; i += 1) {
     result = rateLimiter(reqLimit, reqTimeLimit);
@@ -31,3 +31,13 @@ test('Tests 4 requests in 5 seconds', async () => {
   }
   expect(result).toBe(true);
 });
+
+test('Tests 6 requests in 2 seconds', async () => {
+    clearReqHistory();
+    for (let i = 0; i < 6; i += 1) {
+      result = rateLimiter(reqLimit, reqTimeLimit);
+      if (result === false) break;
+      await timeout(333)
+    }
+    expect(result).toBe(true);
+  });
