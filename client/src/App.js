@@ -45,7 +45,7 @@ class App extends Component {
         <AppBar position="static">
           <Toolbar>
             <Typography variant="h6" className={classes.title}>
-              Welcome to EQ Works 😎
+              Welcome to EQ Works <span role="img" aria-label="Cool Emoji">😎</span>
             </Typography>
             <Button 
               color="inherit" 
