@@ -10,7 +10,7 @@
     "client": "cd client && npm run start",
     "pretest": "eslint --ignore-path .eslintignore .",
     "test": "jest",
-    "build": "cd client && npm install && npm run build"
+    "build": "cd client && yarn install && npm run build"
   },
   "repository": {
     "type": "git",
