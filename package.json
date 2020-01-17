@@ -23,16 +23,17 @@
   },
   "homepage": "https://github.com/EQWorks/ws-product-nodejs#readme",
   "dependencies": {
+    "@material-ui/core": "^4.8.3",
     "express": "^4.15.3",
     "if-env": "^1.0.4",
     "jest": "^24.9.0",
     "pg": "^6.2.4"
   },
   "devDependencies": {
+    "concurrently": "^5.0.2",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.20.0",
-    "nodemon": "^1.11.0",
-    "concurrently": "^5.0.2"
+    "nodemon": "^1.11.0"
   }
 }
