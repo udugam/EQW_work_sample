@@ -10,6 +10,10 @@ import {
 } from "@material-ui/core"
 import moment from 'moment'
 
+//  Import custom components
+import DataTable from './DataTable'
+
+
 class Stats extends Component {
     state = {
         timeFrame: "daily",
@@ -19,7 +23,9 @@ class Stats extends Component {
           impressions: true,
           clicks: false,
           revenue: false
-        }
+        },
+        tableHeadings: [],
+        tableData: []
     }
 
     handleMetricChange = (metric, metricState) => {
@@ -37,33 +43,42 @@ class Stats extends Component {
             .then(res => res.json())
             .then(json => this.setState({rawData:json}, this.massageData))
     }
-
+    
     massageData = () => {
-        //  Set x-axis and metric names
-        let massagedData = []
-        let headings = ['Day']
-        let metrics = this.state.metrics
+      //  Set x-axis and metric names
+      let massagedData = []
+      let headings = ['Day']
+      let tableHeadings = ['date']
+      let tableData = []
+      let metrics = this.state.metrics
+      let rawData = this.state.rawData
+
         for(var key in metrics) {
+          tableHeadings.push(key)
           if(metrics[key] === true) {
-            if(key === 'impressions') headings.push('impressions X 1000')
-            else 
-              headings.push(key) 
+            if (key === 'impressions') headings.push('impressions/1000')
+            else headings.push(key)
           }
         }
         massagedData.push(headings)
   
         //  Loop through rawData and push data in corrected format into massagedData Array
-        let rawData = this.state.rawData
         rawData.forEach(stat => {
           let row = []
+          let dataRow = []
+
+          // Date Logic
           if(this.state.timeFrame === 'hourly') {
             row.push(moment(stat.date).add(stat.hour,'h').toDate())
+            dataRow.push(moment(stat.date).add(stat.hour,'h').toString())
           } else {
             row.push(new Date(stat.date))
+            dataRow.push(moment(stat.date).toString())
           }
 
-          let metrics = this.state.metrics
+          //  Metric Logic
           for(var key in metrics) {
+            dataRow.push(stat[key])
             if(metrics[key] === true) {
               if(key === 'impressions') {
                 row.push(Number(stat[key])/1000) 
@@ -73,11 +88,11 @@ class Stats extends Component {
             }
           }
           massagedData.push(row)
+          tableData.push(dataRow)
         })
-        console.log(massagedData)
 
         //  Save massagedData into state
-        this.setState({massagedData})
+        this.setState({massagedData, tableHeadings, tableData})
 
     }
 
@@ -105,7 +120,6 @@ class Stats extends Component {
                   <FormControlLabel
                     control={
                       <Checkbox checked={this.state.metrics.impressions} onChange={()=>this.handleMetricChange('impressions',this.state.metrics.impressions)} value="impressions"/>
-                      // <Checkbox    />
                     }
                     label="Impressions"
                   />
@@ -137,6 +151,11 @@ class Stats extends Component {
                     }}
                     rootProps={{ 'data-testid': '3' }}                    
                 />
+              </Grid>
+              <Grid item>
+              {this.state.tableHeadings.length > 0 && 
+                <DataTable headings={this.state.tableHeadings} data={this.state.tableData}/>
+              }
               </Grid>
             </Grid>
         )
