@@ -13,8 +13,6 @@ import moment from 'moment'
 //  Import custom components
 import DataTable from './DataTable'
 
-// import uuid for unique rowId's
-const uuidv4 = require('uuid/v4');
 
 class Stats extends Component {
     state = {

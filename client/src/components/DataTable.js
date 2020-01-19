@@ -26,7 +26,8 @@ class DataTable extends Component {
         if( searchText.length > 0) {
             this.props.data.map( (row,index) => {
                 let rowString = row.toString()
-                if(rowString.includes(searchText)) results.push(index)
+                if(rowString.includes(searchText)) return results.push(index)
+                return null
             })
         }
         this.setState({results}, this.render)
