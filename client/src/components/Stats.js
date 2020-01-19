@@ -12,6 +12,7 @@ import moment from 'moment'
 
 //  Import custom components
 import DataTable from './DataTable'
+import Map from './Map'
 
 
 class Stats extends Component {
@@ -156,6 +157,9 @@ class Stats extends Component {
               {this.state.tableHeadings.length > 0 && 
                 <DataTable headings={this.state.tableHeadings} data={this.state.tableData}/>
               }
+              </Grid>
+              <Grid item>
+                <Map />
               </Grid>
             </Grid>
         )
