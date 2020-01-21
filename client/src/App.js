@@ -8,13 +8,16 @@ import {
   Toolbar,
   Typography,
   withStyles,
-  Button
+  Grid,
+  Container,
+  Select,
+  MenuItem
 } from '@material-ui/core';
 
 //Import Custom Components
-import Events from './components/Events'
-import Poi from './components/Poi'
-import Stats from './components/Stats'
+import Graph from './components/Graph'
+// import DataTable from './components/DataTable'
+// import Map from './components/Map'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -31,13 +34,40 @@ const useStyles = makeStyles(theme => ({
 class App extends Component {
 
   state = {
-    currentPage: "home"
+    timeFrame: "daily",
+    rawData: [],
+    tableHeadings: [],
+    tableData: []
   }
   
-  handlePageChange = (pageName) => {
-    this.setState({currentPage: pageName})
+  handleTimeChange = (event) => {
+    this.setState({timeFrame : event.target.value}, this.fetchData)
+  }
+
+  joinData = () => {
+
+  }
+
+  fetchData = () => {
+    const urls = [
+      `https://pure-bastion-53936.herokuapp.com/stats/${this.state.timeFrame}`,
+      `https://pure-bastion-53936.herokuapp.com/events/${this.state.timeFrame}`,
+      `https://pure-bastion-53936.herokuapp.com/poi`
+    ]
+
+    Promise.all(urls.map(url =>
+      fetch(url)               
+        .then(res => res.json())
+    ))
+    .then(data => {
+      this.setState({rawData: data})
+    })
   }
   
+  componentDidMount() {
+    this.fetchData()
+  }
+
   render() {
     const {classes} = this.props
     return(
@@ -47,38 +77,26 @@ class App extends Component {
             <Typography variant="h6" className={classes.title}>
               Welcome to EQ Works <span role="img" aria-label="Cool Emoji">😎</span>
             </Typography>
-            <Button 
-              color="inherit" 
-              variant = {this.state.currentPage === "events" ? "outlined" : "text"} 
-              onClick = {() => this.handlePageChange("events")}
-            > 
-              Events
-            </Button>
-            <Button 
-              color="inherit"
-              variant = {this.state.currentPage === "stats" ? "outlined" : "text"} 
-              onClick = {() => this.handlePageChange("stats")}
+            <Select
+              value={this.state.timeFrame}
+              onChange={this.handleTimeChange}
             >
-              Stats
-            </Button>
-            <Button 
-              color="inherit"
-              variant = {this.state.currentPage === "poi" ? "outlined" : "text"} 
-              onClick = {() => this.handlePageChange("poi")}
-            >
-              Points of Interest
-            </Button>
+              <MenuItem value='daily'>Daily</MenuItem>
+              <MenuItem value='hourly'>Hourly</MenuItem>
+            </Select>
           </Toolbar>
         </AppBar>
-        {this.state.currentPage === "events" &&
-          <Events />
-        }
-        {this.state.currentPage === "poi" &&
-          <Poi />
-        }
-        {this.state.currentPage === "stats" &&
-          <Stats />
-        }
+        <Container>
+          <Grid
+            container
+            direction="column"
+            justify="center"
+            alignItems="center"
+          >
+            <Graph rawData={this.state.statsData} timeFrame={this.state.timeFrame}/>
+          </Grid>
+        </Container>
+        
 
       </div>
     )
