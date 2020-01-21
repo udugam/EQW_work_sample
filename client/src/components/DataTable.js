@@ -10,13 +10,16 @@ import {
     TextField,
     Typography
 } from '@material-ui/core'
+import NumberFormat from 'react-number-format'
+import moment from 'moment'
+import Fuse from 'fuse.js'
 
 class DataTable extends Component {
 
     state = {
         searchTerm: '',
         results: [],
-        headings: ['Date', 'Clicks', 'Revenue', 'Events', 'Points of Interest']
+        headings: ['Points of Interest', 'Impressions', 'Clicks', 'Events', 'Revenue', 'Date']
     }
 
     handleSearchTerm = (event) => {
@@ -24,14 +27,9 @@ class DataTable extends Component {
     }
 
     searchData = (searchText) => {
-        let results = []
-        if( searchText.length > 0) {
-            this.props.data.map( (row,index) => {
-                let rowString = row.toString()
-                if(rowString.includes(searchText)) return results.push(index)
-                return null
-            })
-        }
+        let options = {keys: ['poi.name'], id:"id"};
+        let fuse = new Fuse(this.props.rawData, options)
+        let results = fuse.search(searchText)
         this.setState({results}, this.render)
     }
 
@@ -56,11 +54,14 @@ class DataTable extends Component {
                         <TableBody>
                         {this.props.rawData.map( (data,index) => (
                             <TableRow selected={this.state.results.toString().includes(index)} key={index}>
-                                <TableCell align="right">{data.date}</TableCell> 
-                                <TableCell align="right">{data.clicks}</TableCell> 
-                                <TableCell align="right">{data.revenue}</TableCell> 
-                                <TableCell align="right">{data.events}</TableCell> 
-                                <TableCell align="right">{data.poi.name}</TableCell>
+                                <TableCell> {data.poi.name} </TableCell>
+                                <TableCell> {data.impressions} </TableCell> 
+                                <TableCell> {data.clicks} </TableCell> 
+                                <TableCell> {data.events} </TableCell> 
+                                <TableCell> 
+                                    <NumberFormat value={data.revenue} displayType="text" prefix="$" thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+                                </TableCell> 
+                                <TableCell> {moment(data.date).format("dddd, MMMM Do YYYY, h:mm:ss a")} </TableCell> 
                             </TableRow> 
                         ))}
                         </TableBody>

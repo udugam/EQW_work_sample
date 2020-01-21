@@ -11,8 +11,7 @@ import {
   Grid,
   Container,
   Select,
-  MenuItem,
-  Divider
+  MenuItem
 } from '@material-ui/core';
 
 //Import Custom Components
@@ -49,9 +48,14 @@ class App extends Component {
   joinData = () => {
     let joinedData = []
     this.state.rawData[0].forEach( (row, index) => {
+      //  Copy all properties from all three endpoint responses into one object
       let joinedRowData = {...row}
       joinedRowData.events = this.state.rawData[1][index].events
       joinedRowData.poi = this.state.rawData[2][index%4]
+
+      //  Add id identifier for each row of data (will be used for fuzzy search row heighlighting)
+      //  Then push joined object to joinedData Array
+      joinedRowData.id = index
       joinedData.push(joinedRowData)
     })
     this.setState({joinedData})
