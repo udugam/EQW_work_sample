@@ -7,14 +7,16 @@ import {
     TableCell,
     Paper,
     TableBody,
-    TextField
+    TextField,
+    Typography
 } from '@material-ui/core'
 
 class DataTable extends Component {
 
     state = {
         searchTerm: '',
-        results: []
+        results: [],
+        headings: ['Date', 'Clicks', 'Revenue', 'Events', 'Points of Interest']
     }
 
     handleSearchTerm = (event) => {
@@ -36,6 +38,9 @@ class DataTable extends Component {
     render() {
         return(
             <Fragment>
+                <Typography variant="h4">
+                  Data Table w/ Fuzzy Search
+                </Typography>
                 <form noValidate autoComplete="off">
                     <TextField id="search" onChange={this.handleSearchTerm} value={this.state.searchTerm} label="Search" />
                 </form>
@@ -43,18 +48,20 @@ class DataTable extends Component {
                     <Table size="small" aria-label="a dense table">
                         <TableHead>
                         <TableRow>
-                        {this.props.headings.map( (heading, index) => (
+                        {this.state.headings.map( (heading, index) => (
                             <TableCell key={index}>{heading}</TableCell>
                         ))}                        
                         </TableRow>
                         </TableHead>
                         <TableBody>
-                        {this.props.data.map( (stat,index) => (
+                        {this.props.rawData.map( (data,index) => (
                             <TableRow selected={this.state.results.toString().includes(index)} key={index}>
-                            {stat.map( (metric, index) => (
-                                <TableCell key={index} align="right">{metric}</TableCell>    
-                            ))} 
-                            </TableRow>
+                                <TableCell align="right">{data.date}</TableCell> 
+                                <TableCell align="right">{data.clicks}</TableCell> 
+                                <TableCell align="right">{data.revenue}</TableCell> 
+                                <TableCell align="right">{data.events}</TableCell> 
+                                <TableCell align="right">{data.poi.name}</TableCell>
+                            </TableRow> 
                         ))}
                         </TableBody>
                     </Table>

@@ -11,12 +11,13 @@ import {
   Grid,
   Container,
   Select,
-  MenuItem
+  MenuItem,
+  Divider
 } from '@material-ui/core';
 
 //Import Custom Components
 import Graph from './components/Graph'
-// import DataTable from './components/DataTable'
+import DataTable from './components/DataTable'
 // import Map from './components/Map'
 
 const useStyles = makeStyles(theme => ({
@@ -102,6 +103,7 @@ class App extends Component {
             alignItems="center"
           >
             <Graph rawData={this.state.joinedData} timeFrame={this.state.timeFrame}/>
+            <DataTable rawData={this.state.joinedData} timeFrame={this.state.timeFrame}/>
           </Grid>
         </Container>
         
