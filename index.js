@@ -3,8 +3,8 @@ const pg = require('pg');
 const { rateLimiter } = require('./rateLimiter');
 
 //  Define API rate limit here
-const reqLimit = 2;
-const reqTimeLimit = 1000;
+const reqLimit = 3;
+const reqTimeLimit = 2000;
 let permitRequest = true;
 
 const app = express();
