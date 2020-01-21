@@ -15,7 +15,8 @@ class Graph extends Component {
     metrics: {
       impressions: true,
       clicks: false,
-      revenue: false
+      revenue: false,
+      events: false
     },
     rawData: this.props.rawData
   }
@@ -101,6 +102,12 @@ class Graph extends Component {
                       <Checkbox checked={this.state.metrics.revenue} onChange={()=>this.handleMetricChange('revenue',this.state.metrics.revenue)} value="revenue"/>
                     }
                     label="Revenue"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox checked={this.state.metrics.events} onChange={()=>this.handleMetricChange('events',this.state.metrics.events)} value="events"/>
+                    }
+                    label="Events"
                   />
                 </FormGroup>
               </Grid>

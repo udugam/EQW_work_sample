@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import './App.css';
+import moment from 'moment'
 
 //Import Material UI Components
 import { makeStyles } from '@material-ui/core/styles';
@@ -36,6 +37,7 @@ class App extends Component {
   state = {
     timeFrame: "daily",
     rawData: [],
+    joinedData: [],
     tableHeadings: [],
     tableData: []
   }
@@ -45,7 +47,14 @@ class App extends Component {
   }
 
   joinData = () => {
-
+    let joinedData = []
+    this.state.rawData[0].forEach( (row, index) => {
+      let joinedRowData = {...row}
+      joinedRowData.events = this.state.rawData[1][index].events
+      joinedRowData.poi = this.state.rawData[2][index%4]
+      joinedData.push(joinedRowData)
+    })
+    this.setState({joinedData})
   }
 
   fetchData = () => {
@@ -60,7 +69,7 @@ class App extends Component {
         .then(res => res.json())
     ))
     .then(data => {
-      this.setState({rawData: data})
+      this.setState({rawData: data}, this.joinData)
     })
   }
   
@@ -93,7 +102,7 @@ class App extends Component {
             justify="center"
             alignItems="center"
           >
-            <Graph rawData={this.state.statsData} timeFrame={this.state.timeFrame}/>
+            <Graph rawData={this.state.joinedData} timeFrame={this.state.timeFrame}/>
           </Grid>
         </Container>
         
