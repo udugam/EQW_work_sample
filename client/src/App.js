@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import './App.css';
-import moment from 'moment'
 
 //Import Material UI Components
 import { makeStyles } from '@material-ui/core/styles';
