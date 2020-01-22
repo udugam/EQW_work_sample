@@ -6,7 +6,34 @@ const styles = theme => ({
         flexGrow: 1
     },
     tableContainer: {
-        maxHeight: '75vh'
+        maxHeight: '60vh'
+    
+    },
+    menuButton: {
+        marginRight: theme.spacing(2),
+    },
+    dataSelect: {
+        color: 'white',
+        fontSize: '18px',
+    },
+    mainGrid: {
+        paddingTop: '64px',
+    },
+    chartGrid: {
+        paddingTop: '20px',
+        paddingBottom: '30px',
+    },
+    dataTableGrid: {
+        paddingTop: '30px',
+        paddingBottom: '30px',
+    },
+    mapGrid: {
+        paddingTop: '30px',
+        paddingBottom: '30px',
+    },
+    textField: {
+        margin: theme.spacing(1),
+        width: 200,
     }
 })
 

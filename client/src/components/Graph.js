@@ -1,13 +1,15 @@
-import React, {Component, Fragment} from 'react'
+import React, {Component} from 'react'
 import { Chart } from "react-google-charts";
 import { 
   Grid,
   FormGroup,
   FormControlLabel,
   Checkbox,
-  Typography
+  Typography,
+  withStyles
 } from "@material-ui/core"
 import moment from 'moment'
+import styles from '../styles.js'
 
 class Graph extends Component {
 
@@ -78,8 +80,15 @@ class Graph extends Component {
   }
   
   render() {
+    const {classes} = this.props
       return(
-            <Fragment>
+            <Grid
+              container
+              direction="column"
+              justify="center"
+              alignItems="center"
+              className={classes.chartGrid}
+            >
               <Grid item>
                 <Typography variant="h4">
                   General Chart Visualizations
@@ -126,9 +135,9 @@ class Graph extends Component {
                     rootProps={{ 'data-testid': '3' }}                    
                 />
               </Grid>
-            </Fragment>
+            </Grid>
       )
   }
 }
 
-export default Graph
+export default withStyles(styles)(Graph)

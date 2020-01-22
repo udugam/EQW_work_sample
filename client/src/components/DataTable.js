@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react'
+import React, {Component} from 'react'
 import {
     TableContainer,
     Table,
@@ -8,7 +8,8 @@ import {
     TableBody,
     TextField,
     Typography,
-    withStyles
+    withStyles,
+    Grid
 } from '@material-ui/core'
 import NumberFormat from 'react-number-format'
 import moment from 'moment'
@@ -37,12 +38,18 @@ class DataTable extends Component {
     render() {
         const {classes} = this.props
         return(
-            <Fragment>
+            <Grid
+                container
+                direction="column"
+                justify="center"
+                alignItems="center"
+                className={classes.dataTableGrid}
+            >
                 <Typography variant="h4">
                   Data Table w/ Fuzzy Search
                 </Typography>
                 <form noValidate autoComplete="off">
-                    <TextField id="search" onChange={this.handleSearchTerm} value={this.state.searchTerm} label="Search" />
+                    <TextField id="search" onChange={this.handleSearchTerm} value={this.state.searchTerm} label="Search" className={classes.textField} variant="outlined"/>
                 </form>
                 <TableContainer className={classes.tableContainer}>
                     <Table size="small" aria-label="a dense table">
@@ -69,7 +76,7 @@ class DataTable extends Component {
                         </TableBody>
                     </Table>
                 </TableContainer>
-            </Fragment>
+            </Grid>
         )
     }
 }
