@@ -17,7 +17,7 @@ import {
 //Import Custom Components
 import Graph from './components/Graph'
 import DataTable from './components/DataTable'
-// import Map from './components/Map'
+import MapVisualization from './components/MapVisualization';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -108,6 +108,7 @@ class App extends Component {
           >
             <Graph rawData={this.state.joinedData} timeFrame={this.state.timeFrame}/>
             <DataTable rawData={this.state.joinedData} timeFrame={this.state.timeFrame}/>
+            <MapVisualization rawData={this.state.joinedData} timeFrame={this.state.timeFrame}/>
           </Grid>
         </Container>
         
