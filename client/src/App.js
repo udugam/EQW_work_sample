@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import './App.css';
 
 //Import Material UI Components
-import { makeStyles } from '@material-ui/core/styles';
 import { 
   AppBar,
   Toolbar,
@@ -11,28 +10,14 @@ import {
   Grid,
   Container,
   Select,
-  MenuItem
+  MenuItem,
 } from '@material-ui/core';
 
 //Import Custom Components
 import Graph from './components/Graph'
 import DataTable from './components/DataTable'
 import MapVisualization from './components/MapVisualization';
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
-  title: {
-    flexGrow: 1,
-  },
-  container: {
-    maxHeight: 400
-  }
-}));
+import styles from './styles.js'
 
 class App extends Component {
 
@@ -90,16 +75,16 @@ class App extends Component {
       <div className={classes.root}>
         <AppBar position="fixed">
           <Toolbar>
-            <Typography variant="h6" className={classes.title}>
+            <Typography variant="h6" className={classes.grow}>
               EQW Work Sample by Ryan Udugampola
             </Typography>
             <Select
-              value={this.state.timeFrame}
-              onChange={this.handleTimeChange}
-              variant= "outlined"
+              value = {this.state.timeFrame}
+              onChange = {this.handleTimeChange}
+              className = {classes.dataSelect}
             >
-              <MenuItem value='daily'>Daily</MenuItem>
-              <MenuItem value='hourly'>Hourly</MenuItem>
+              <MenuItem value='daily'>Daily Data</MenuItem>
+              <MenuItem value='hourly'>Hourly Data</MenuItem>
             </Select>
           </Toolbar>
         </AppBar>
@@ -109,6 +94,7 @@ class App extends Component {
             direction="column"
             justify="center"
             alignItems="center"
+            className={classes.mainGrid}
           >
             <Graph rawData={this.state.joinedData} timeFrame={this.state.timeFrame}/>
             <DataTable {...this.props} rawData={this.state.joinedData} timeFrame={this.state.timeFrame}/>
@@ -121,4 +107,4 @@ class App extends Component {
   }
 }
 
-export default withStyles(useStyles)(App);
+export default withStyles(styles)(App);

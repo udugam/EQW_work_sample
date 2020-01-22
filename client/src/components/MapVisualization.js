@@ -11,9 +11,11 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
-    DialogContentText
+    DialogContentText,
+    withStyles
 } from '@material-ui/core'
 import moment from 'moment'
+import styles from '../styles.js'
 
 class MapVisualization extends Component {
 
@@ -98,8 +100,15 @@ class MapVisualization extends Component {
     }
 
     render() {
+        const {classes} = this.props
         return(
-            <Grid item>
+            <Grid 
+                container
+                direction="column"
+                justify="center"
+                alignItems="center"
+                className={classes.mapGrid}
+            >
                 <Typography variant="h4">
                   Geo Visualizations
                 </Typography>
@@ -131,7 +140,7 @@ class MapVisualization extends Component {
                     <GoogleMap
                         id="circle-example"
                         mapContainerStyle={{
-                            height: "75vh",
+                            height: "60vh",
                             width: "75vw"
                         }}
                         zoom={4}
@@ -191,4 +200,4 @@ class MapVisualization extends Component {
     }    
 }
 
-export default MapVisualization
+export default withStyles(styles)(MapVisualization)
