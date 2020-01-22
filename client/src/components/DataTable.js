@@ -5,14 +5,15 @@ import {
     TableHead,
     TableRow,
     TableCell,
-    Paper,
     TableBody,
     TextField,
-    Typography
+    Typography,
+    withStyles
 } from '@material-ui/core'
 import NumberFormat from 'react-number-format'
 import moment from 'moment'
 import Fuse from 'fuse.js'
+import styles from '../styles.js'
 
 class DataTable extends Component {
 
@@ -34,6 +35,7 @@ class DataTable extends Component {
     }
 
     render() {
+        const {classes} = this.props
         return(
             <Fragment>
                 <Typography variant="h4">
@@ -42,7 +44,7 @@ class DataTable extends Component {
                 <form noValidate autoComplete="off">
                     <TextField id="search" onChange={this.handleSearchTerm} value={this.state.searchTerm} label="Search" />
                 </form>
-                <TableContainer component={Paper}>
+                <TableContainer className={classes.tableContainer}>
                     <Table size="small" aria-label="a dense table">
                         <TableHead>
                         <TableRow>
@@ -72,4 +74,4 @@ class DataTable extends Component {
     }
 }
 
-export default DataTable
+export default withStyles(styles)(DataTable)
