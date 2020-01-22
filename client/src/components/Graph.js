@@ -127,14 +127,6 @@ class Graph extends Component {
                 />
               </Grid>
             </Fragment>
-            // <Grid item>
-            // {this.state.tableHeadings.length > 0 && 
-            //   <DataTable headings={this.state.tableHeadings} data={this.state.tableData}/>
-            // }
-            // </Grid>
-            // <Grid item>
-            //   <Map />
-            // </Grid>
       )
   }
 }
