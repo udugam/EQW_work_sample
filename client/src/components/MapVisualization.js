@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { GoogleMap, LoadScript, Marker, MarkerClusterer } from '@react-google-maps/api'
+import { GoogleMap, LoadScript, HeatmapLayer} from '@react-google-maps/api'
 import {
     Grid,
     Typography,
@@ -15,7 +15,8 @@ class MapVisualization extends Component {
         metric: 'impressions',
         date: moment("2017-01-01T00:00:00.000Z").format("dddd, MMMM Do YYYY, h:mm:ss a"),
         aggregatedData: [],
-        dates: []
+        dates: [],
+        loadHeatMap: false
     }
 
     populateMap = () => {
@@ -51,7 +52,7 @@ class MapVisualization extends Component {
                 aggregatedData.set(data.poi.poi_id, {...data})
             }
         })
-        this.setState({aggregatedData: Array.from(aggregatedData)})
+        this.setState({aggregatedData: Array.from(aggregatedData), loadHeatMap: true})
     }
 
     handleMetricChange = (event) => {
@@ -98,8 +99,9 @@ class MapVisualization extends Component {
                 <LoadScript
                     id="script-loader"
                     googleMapsApiKey="AIzaSyD552D9ip_aM8XR9xwihw91hkhPdA9vHjE"
+                    libraries={["visualization"]}
                 >
-                    <GoogleMap 
+                    <GoogleMap
                         id="circle-example"
                         mapContainerStyle={{
                             height: "75vh",
@@ -110,24 +112,15 @@ class MapVisualization extends Component {
                             lat: 48.6,
                             lng: -95.5
                         }}
+                        onLoad = {this.populateMap}
                     >
-                        <MarkerClusterer
-                            options = {{ 
-                                imagePath:"https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m" 
-                            }}
-                        >
-
-                        {(clusterer) => this.state.aggregatedData.map((location, i) => (
-                            <Marker
-                                key = {location[1].id} 
-                                position = {{
-                                    lat: location[1].poi.lat,
-                                    lng: location[1].poi.lon
-                                }}
-                                clusterer = {clusterer}
+                        {this.state.loadHeatMap && 
+                            <HeatmapLayer
+                                data={this.state.aggregatedData.map( location => {
+                                    return new window.google.maps.LatLng(location[1].poi.lat, location[1].poi.lon)
+                                })}
                             />
-                        ))}
-                        </MarkerClusterer>
+                        }
                     </GoogleMap>
                 </LoadScript>
             </Grid>
