@@ -1,11 +1,17 @@
-import React, {Component} from 'react'
-import { GoogleMap, LoadScript, HeatmapLayer} from '@react-google-maps/api'
+import React, {Component, Fragment} from 'react'
+import { GoogleMap, LoadScript, HeatmapLayer, MarkerClusterer, Marker} from '@react-google-maps/api'
 import {
     Grid,
     Typography,
     FormControl,
     Select,
     MenuItem,
+    FormControlLabel,
+    Checkbox,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText
 } from '@material-ui/core'
 import moment from 'moment'
 
@@ -16,7 +22,13 @@ class MapVisualization extends Component {
         date: moment("2017-01-01T00:00:00.000Z").format("dddd, MMMM Do YYYY, h:mm:ss a"),
         aggregatedData: [],
         dates: [],
-        loadHeatMap: false
+        showHeatMap: false,
+        libraries: ["visualization"],
+        locationInfo: {
+            name: "",
+            metric: ""
+        },
+        currentLocation: {lat: 48.6,lng: -95.5}
     }
 
     populateMap = () => {
@@ -59,6 +71,15 @@ class MapVisualization extends Component {
         this.setState({metric: event.target.value},this.filterData)
     }
 
+    handleSelection = () => {
+        let state = this.state.showHeatMap
+        this.setState({showHeatMap: !state})
+      }
+
+    handleClose = () => {
+        this.setState({locationInfoOpen: false})
+    }
+
     determineDateRange = () => {
         let dates = new Set()
         this.props.rawData.forEach(data => {
@@ -92,6 +113,12 @@ class MapVisualization extends Component {
                     <MenuItem value={'events'}>Events</MenuItem>
                     <MenuItem value={'revenue'}>Revenue</MenuItem>
                     </Select>
+                    <FormControlLabel
+                    control={
+                      <Checkbox checked={this.state.showHeatMap} onChange={()=>this.handleSelection()}/>
+                    }
+                    label={`Show Heat Map of ${this.state.metric}`}
+                  />
                 </FormControl>
                 <Typography variant="h6">
                   {`from ${this.state.dates[0]} - ${this.state.dates[this.state.dates.length-1]}`}
@@ -99,7 +126,7 @@ class MapVisualization extends Component {
                 <LoadScript
                     id="script-loader"
                     googleMapsApiKey="AIzaSyD552D9ip_aM8XR9xwihw91hkhPdA9vHjE"
-                    libraries={["visualization"]}
+                    libraries={this.state.libraries}
                 >
                     <GoogleMap
                         id="circle-example"
@@ -108,21 +135,57 @@ class MapVisualization extends Component {
                             width: "75vw"
                         }}
                         zoom={4}
-                        center={{
-                            lat: 48.6,
-                            lng: -95.5
-                        }}
+                        center={this.state.currentLocation}
+                        onCenterChanged	= {(e)=>console.log(e)}
                         onLoad = {this.populateMap}
                     >
-                        {this.state.loadHeatMap && 
-                            <HeatmapLayer
-                                data={this.state.aggregatedData.map( location => {
-                                    return new window.google.maps.LatLng(location[1].poi.lat, location[1].poi.lon)
-                                })}
-                            />
+                        <MarkerClusterer
+                            options = {{ 
+                                imagePath:"https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m" 
+                            }}
+                        >
+                            {
+                                (clusterer) => this.state.aggregatedData.map( location => (
+                                <Fragment>
+                                    <Marker
+                                        key = {location[1].id} 
+                                        position = {{
+                                            lat: location[1].poi.lat,
+                                            lng: location[1].poi.lon
+                                        }}
+                                        clusterer={clusterer}
+                                        onClick = { () => {
+                                            this.setState({
+                                                locationInfo: {
+                                                    name: location[1].poi.name,
+                                                    metric: location[1][this.state.metric]
+                                                },
+                                                locationInfoOpen: true,
+                                            })
+                                        }}
+                                    />
+                                </Fragment>
+                                ))
+                            }
+                        </MarkerClusterer>
+                        {this.state.showHeatMap && 
+                        <HeatmapLayer
+                            options = {{radius: 50}}
+                            data={this.state.aggregatedData.map( location => {
+                                return {location: new window.google.maps.LatLng(location[1].poi.lat, location[1].poi.lon), weight: location[1][this.state.metric]/100 }
+                            })}
+                        />
                         }
                     </GoogleMap>
                 </LoadScript>
+                <Dialog onClose={this.handleClose} open={this.state.locationInfoOpen}>
+                <DialogTitle>{this.state.locationInfo.name}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            {`${this.state.metric} : ${this.state.locationInfo.metric}`}
+                        </DialogContentText>
+                    </DialogContent>
+                </Dialog>
             </Grid>
         )
     }    

@@ -29,6 +29,9 @@ const useStyles = makeStyles(theme => ({
   title: {
     flexGrow: 1,
   },
+  container: {
+    maxHeight: 400
+  }
 }));
 
 class App extends Component {
@@ -85,14 +88,15 @@ class App extends Component {
     const {classes} = this.props
     return(
       <div className={classes.root}>
-        <AppBar position="static">
+        <AppBar position="fixed">
           <Toolbar>
             <Typography variant="h6" className={classes.title}>
-              Welcome to EQ Works <span role="img" aria-label="Cool Emoji">😎</span>
+              EQW Work Sample by Ryan Udugampola
             </Typography>
             <Select
               value={this.state.timeFrame}
               onChange={this.handleTimeChange}
+              variant= "outlined"
             >
               <MenuItem value='daily'>Daily</MenuItem>
               <MenuItem value='hourly'>Hourly</MenuItem>
@@ -107,12 +111,11 @@ class App extends Component {
             alignItems="center"
           >
             <Graph rawData={this.state.joinedData} timeFrame={this.state.timeFrame}/>
-            <DataTable rawData={this.state.joinedData} timeFrame={this.state.timeFrame}/>
+            <DataTable {...this.props} rawData={this.state.joinedData} timeFrame={this.state.timeFrame}/>
             <MapVisualization rawData={this.state.joinedData} timeFrame={this.state.timeFrame}/>
           </Grid>
         </Container>
-        
-
+      
       </div>
     )
   }
