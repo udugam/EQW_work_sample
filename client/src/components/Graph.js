@@ -121,19 +121,27 @@ class Graph extends Component {
                 </FormGroup>
               </Grid>
               <Grid item >
-                <Chart
-                    width={'75vw'}
-                    height={'75vh'}
-                    chartType="Line"
-                    loader={<div>Loading Chart</div>}
-                    data={this.state.massagedData}
-                    options={{
-                        chart: {
-                        legend: 'none'
-                        },
-                    }}
-                    rootProps={{ 'data-testid': '3' }}                    
-                />
+                {(this.state.metrics.impressions === true 
+                  || this.state.metrics.clicks === true
+                  || this.state.metrics.events === true
+                  || this.state.metrics.revenue === true) ? 
+                  <Chart
+                      width={'75vw'}
+                      height={'75vh'}
+                      chartType="Line"
+                      loader={<div>Loading Chart</div>}
+                      data={this.state.massagedData}
+                      options={{
+                          chart: {
+                          legend: 'none'
+                          },
+                      }}
+                  />
+                  :
+                  <Typography variant="h6">
+                    Please select a metric to display data
+                  </Typography>
+                }
               </Grid>
             </Grid>
       )
