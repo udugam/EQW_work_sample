@@ -1,18 +1,28 @@
 const express = require('express');
+const cookieSession = require('cookie-session');
 const pg = require('pg');
-const { rateLimiter } = require('./rateLimiter');
+const rateLimiter = require('./rateLimiter');
 
 //  Define API rate limit here
 const reqLimit = 1;
 const reqTimeLimit = 5000;
-let permitRequest = true;
 
 const app = express();
 
+// Add cookie-session middleware to be used for distinguishing requests from more than one client
+// while also handling number of requests made. Cookie age will be limited to rate time limit thus
+// the rate-limiter function only needs to check the number of requests for a given cookie
+app.use(cookieSession({
+  name: 'session',
+  keys: ['EQ', 'Works'],
+  // Cookie Options
+  maxAge: reqTimeLimit, // Same as reqTimeLimit set above
+}));
+
 // Add custom rate-limiter middleware
 app.use((req, res, next) => {
-  permitRequest = rateLimiter(reqLimit, reqTimeLimit);
-  if (permitRequest === true) return next();
+  req.session.numRequests = (req.session.numRequests || 0) + 1;
+  if (rateLimiter(req.session.numRequests, reqLimit)) return next();
   return res.status(429).send(`<h1>429 Too Many Requests!</h1> \n <h3>Please try again in ${reqTimeLimit / 1000} seconds</h3>`);
 });
 
