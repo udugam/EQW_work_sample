@@ -3,11 +3,19 @@ const pg = require('pg');
 const { rateLimiter } = require('./rateLimiter');
 
 //  Define API rate limit here
-const reqLimit = 3;
-const reqTimeLimit = 2000;
+const reqLimit = 1;
+const reqTimeLimit = 5000;
 let permitRequest = true;
 
 const app = express();
+
+// Add custom rate-limiter middleware
+app.use((req, res, next) => {
+  permitRequest = rateLimiter(reqLimit, reqTimeLimit);
+  if (permitRequest === true) return next();
+  return res.status(429).send(`<h1>429 Too Many Requests!</h1> \n <h3>Please try again in ${reqTimeLimit / 1000} seconds</h3>`);
+});
+
 // configs come from standard PostgreSQL env vars
 // https://www.postgresql.org/docs/9.6/static/libpq-envars.html
 const pool = new pg.Pool();
@@ -23,10 +31,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.get('/', (req, res) => {
-  //  Check to see if request is permitted before sending a response
-  permitRequest = rateLimiter(reqLimit, reqTimeLimit);
-  if (permitRequest === true) res.send('Welcome to EQ Works 😎');
-  else res.status(429).send(`<h1>429 Too Many Requests!</h1> \n <h3>Please try again in ${reqTimeLimit / 1000} seconds</h3>`);
+  res.send('Welcome to EQ Works 😎');
 });
 
 app.get('/events/hourly', (req, res, next) => {
@@ -36,10 +41,7 @@ app.get('/events/hourly', (req, res, next) => {
     ORDER BY date, hour
     LIMIT 168;
   `;
-  //  Check if request is permitted before querying DB and sending response
-  permitRequest = rateLimiter(reqLimit, reqTimeLimit);
-  if (permitRequest === true) return next();
-  res.status(429).send(`<h1>429 Too Many Requests!</h1> \n <h3>Please try again in ${reqTimeLimit / 1000} seconds</h3>`);
+  return next();
 }, queryHandler);
 
 app.get('/events/daily', (req, res, next) => {
@@ -50,10 +52,7 @@ app.get('/events/daily', (req, res, next) => {
     ORDER BY date
     LIMIT 7;
   `;
-  //  Check if request is permitted before querying DB and sending response
-  permitRequest = rateLimiter(reqLimit, reqTimeLimit);
-  if (permitRequest === true) return next();
-  res.status(429).send(`<h1>429 Too Many Requests!</h1> \n <h3>Please try again in ${reqTimeLimit / 1000} seconds</h3>`);
+  return next();
 }, queryHandler);
 
 app.get('/stats/hourly', (req, res, next) => {
@@ -63,10 +62,7 @@ app.get('/stats/hourly', (req, res, next) => {
     ORDER BY date, hour
     LIMIT 168;
   `;
-  //  Check if request is permitted before querying DB and sending response
-  permitRequest = rateLimiter(reqLimit, reqTimeLimit);
-  if (permitRequest === true) return next();
-  res.status(429).send(`<h1>429 Too Many Requests!</h1> \n <h3>Please try again in ${reqTimeLimit / 1000} seconds</h3>`);
+  return next();
 }, queryHandler);
 
 app.get('/stats/daily', (req, res, next) => {
@@ -80,10 +76,7 @@ app.get('/stats/daily', (req, res, next) => {
     ORDER BY date
     LIMIT 7;
   `;
-  //  Check if request is permitted before querying DB and sending response
-  permitRequest = rateLimiter(reqLimit, reqTimeLimit);
-  if (permitRequest === true) return next();
-  res.status(429).send(`<h1>429 Too Many Requests!</h1> \n <h3>Please try again in ${reqTimeLimit / 1000} seconds</h3>`);
+  return next();
 }, queryHandler);
 
 app.get('/poi', (req, res, next) => {
@@ -91,10 +84,7 @@ app.get('/poi', (req, res, next) => {
     SELECT *
     FROM public.poi;
   `;
-  //  Check if request is permitted before querying DB and sending response
-  permitRequest = rateLimiter(reqLimit, reqTimeLimit);
-  if (permitRequest === true) return next();
-  res.status(429).send(`<h1>429 Too Many Requests!</h1> \n <h3>Please try again in ${reqTimeLimit / 1000} seconds</h3>`);
+  return next();
 }, queryHandler);
 
 app.listen(process.env.PORT || 5555, (err) => {
