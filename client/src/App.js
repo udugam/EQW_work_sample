@@ -51,9 +51,9 @@ class App extends Component {
 
   fetchData = () => {
     const urls = [
-      `https://pure-bastion-53936.herokuapp.com/stats/${this.state.timeFrame}`,
-      `https://pure-bastion-53936.herokuapp.com/events/${this.state.timeFrame}`,
-      `https://pure-bastion-53936.herokuapp.com/poi`
+      `${window.location.origin}/stats/${this.state.timeFrame}`,
+      `${window.location.origin}/events/${this.state.timeFrame}`,
+      `${window.location.origin}/poi`
     ]
 
     Promise.all(urls.map(url =>
