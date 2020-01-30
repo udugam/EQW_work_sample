@@ -28,6 +28,7 @@ class DataTable extends Component {
 
     handleSearchTerm = (event) => {
         // this.setState({searchTerm : event.target.value}, debounce(this.searchData,4000, {leading:true, trailing:true}))
+        event.preventDefault()
         this.setState({searchTerm : event.target.value}, this.searchData)
     }
 
@@ -58,9 +59,9 @@ class DataTable extends Component {
                 <Typography variant="h4">
                   Data Table w/ Fuzzy Search
                 </Typography>
-                <form noValidate autoComplete="off">
+                {/* <form noValidate autoComplete="off"> */}
                     <TextField id="search" onChange={this.handleSearchTerm} value={this.state.searchTerm} label="Search" className={classes.textField} variant="outlined"/>
-                </form>
+                {/* </form> */}
                 <TableContainer className={classes.tableContainer}>
                     <Table size="small" aria-label="a dense table">
                         <TableHead>
