@@ -21,23 +21,37 @@ import debounce from 'lodash.debounce'
 class DataTable extends Component {
 
     state = {
-        searchTerm: '',
+        searchText: '',
+        lastEntry: '',
+        timeoutId: '',
         results: [],
         headings: ['Points of Interest', 'Impressions', 'Clicks', 'Events', 'Revenue', 'Date'],
     }
 
     handleSearchTerm = (event) => {
-        // this.setState({searchTerm : event.target.value}, debounce(this.searchData,4000, {leading:true, trailing:true}))
-        event.preventDefault()
-        this.setState({searchTerm : event.target.value}, this.searchData)
+        this.searchData(event.target.value)
     }
 
-    searchData = (searchText=this.state.searchTerm) => {
+    searchData = (searchText=this.state.searchText) => {
         let options = {keys: ['poi.name'], id:"id", distance: 5, minMatchCharLength: 2};
         let fuse = new Fuse(this.props.rawData, options)
-        console.log(fuse)
         let results = new Set(fuse.search(searchText))
-        this.setState({results}, this.render)
+
+        this.setState({results, searchText, lastEntry: Date.now()}, function() {
+            // Create timeout to execute render function if input has stopped for a given time
+            if(results.size > 0) {
+                let timeoutId = setTimeout(() => this.setState(this.state),1500)
+            }
+        })
+    }
+
+    shouldComponentUpdate(nextProps,nextState) {
+        // The logic here will debounce the render method to improve the performance of the search results
+        if(nextState.lastEntry === '') return true  // Initial conditioned needed to render table
+        if(nextState.searchText.length%5 === 0) return true // Render for every 5th character
+        if(Date.now()-nextState.lastEntry > 1500) return true
+    
+        return false
     }
 
     componentDidUpdate(prevProps) {
@@ -59,9 +73,7 @@ class DataTable extends Component {
                 <Typography variant="h4">
                   Data Table w/ Fuzzy Search
                 </Typography>
-                {/* <form noValidate autoComplete="off"> */}
-                    <TextField id="search" onChange={this.handleSearchTerm} value={this.state.searchTerm} label="Search" className={classes.textField} variant="outlined"/>
-                {/* </form> */}
+                    <TextField id="search" onChange={this.handleSearchTerm} label="Search" className={classes.textField} variant="outlined"/>
                 <TableContainer className={classes.tableContainer}>
                     <Table size="small" aria-label="a dense table">
                         <TableHead>
