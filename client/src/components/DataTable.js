@@ -15,24 +15,34 @@ import NumberFormat from 'react-number-format'
 import moment from 'moment'
 import Fuse from 'fuse.js'
 import styles from '../styles.js'
+import debounce from 'lodash.debounce'
+
 
 class DataTable extends Component {
 
     state = {
         searchTerm: '',
         results: [],
-        headings: ['Points of Interest', 'Impressions', 'Clicks', 'Events', 'Revenue', 'Date']
+        headings: ['Points of Interest', 'Impressions', 'Clicks', 'Events', 'Revenue', 'Date'],
     }
 
     handleSearchTerm = (event) => {
-        this.setState({searchTerm : event.target.value}, () => this.searchData(this.state.searchTerm))
+        // this.setState({searchTerm : event.target.value}, debounce(this.searchData,4000, {leading:true, trailing:true}))
+        this.setState({searchTerm : event.target.value}, this.searchData)
     }
 
-    searchData = (searchText) => {
-        let options = {keys: ['poi.name'], id:"id"};
+    searchData = (searchText=this.state.searchTerm) => {
+        let options = {keys: ['poi.name'], id:"id", distance: 5, minMatchCharLength: 2};
         let fuse = new Fuse(this.props.rawData, options)
-        let results = fuse.search(searchText)
+        console.log(fuse)
+        let results = new Set(fuse.search(searchText))
         this.setState({results}, this.render)
+    }
+
+    componentDidUpdate(prevProps) {
+        if(prevProps !== this.props) {
+            this.searchData()
+        }
     }
 
     render() {
@@ -62,7 +72,7 @@ class DataTable extends Component {
                         </TableHead>
                         <TableBody>
                         {this.props.rawData.map( (data,index) => (
-                            <TableRow selected={this.state.results.toString().includes(index)} key={index}>
+                            <TableRow selected={this.state.results.has(index.toString())} key={index}>
                                 <TableCell> {data.poi.name} </TableCell>
                                 <TableCell> {data.impressions} </TableCell> 
                                 <TableCell> {data.clicks} </TableCell> 
