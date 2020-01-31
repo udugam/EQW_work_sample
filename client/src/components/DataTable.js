@@ -40,7 +40,7 @@ class DataTable extends Component {
         this.setState({results, searchText, lastEntry: Date.now()}, function() {
             // Create timeout to execute render function if input has stopped for a given time
             if(results.size > 0) {
-                let timeoutId = setTimeout(() => this.setState(this.state),LATENCY)
+                setTimeout(() => this.setState(this.state),LATENCY)
             }
         })
     }
