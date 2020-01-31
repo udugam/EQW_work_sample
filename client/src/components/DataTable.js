@@ -29,7 +29,8 @@ class DataTable extends Component {
     }
 
     handleSearchTerm = (event) => {
-        if(event.target.value !== '') this.props.setLoader(true)
+        if(event.target.value === '') this.props.setLoader(false)
+        else this.props.setLoader(true)
         this.searchData(event.target.value)
     }
 
