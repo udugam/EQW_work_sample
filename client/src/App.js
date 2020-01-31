@@ -40,7 +40,7 @@ class App extends Component {
   }
 
   fetchData = () => {
-    fetch(`${window.location}/joinedData/${this.state.timeFrame}`)
+    fetch(`${window.location}joinedData/${this.state.timeFrame}`)
     .then(response => {
       if (!response.ok) throw Error(`${response.status} : ${response.statusText}`);
       return response;
