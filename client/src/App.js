@@ -11,6 +11,7 @@ import {
   Container,
   Select,
   MenuItem,
+  CircularProgress
 } from '@material-ui/core';
 
 //Import Custom Components
@@ -23,45 +24,28 @@ class App extends Component {
 
   state = {
     timeFrame: "daily",
-    rawData: [],
     joinedData: [],
     tableHeadings: [],
-    tableData: []
+    tableData: [],
+    loading: true
+  }
+
+  setLoader = (value) => {
+    this.setState({loading: value})
   }
   
   handleTimeChange = (event) => {
-    this.setState({timeFrame : event.target.value}, this.fetchData)
-  }
-
-  joinData = () => {
-    let joinedData = []
-    this.state.rawData[0].forEach( (row, index) => {
-      //  Copy all properties from all three endpoint responses into one object
-      let joinedRowData = {...row}
-      joinedRowData.events = this.state.rawData[1][index].events
-      joinedRowData.poi = this.state.rawData[2][index%4]
-
-      //  Add id identifier for each row of data (will be used for fuzzy search row heighlighting)
-      //  Then push joined object to joinedData Array
-      joinedRowData.id = index
-      joinedData.push(joinedRowData)
-    })
-    this.setState({joinedData})
+    this.setState({timeFrame : event.target.value, loading: true}, this.fetchData)
   }
 
   fetchData = () => {
-    const urls = [
-      `${window.location.origin}/stats/${this.state.timeFrame}`,
-      `${window.location.origin}/events/${this.state.timeFrame}`,
-      `${window.location.origin}/poi`
-    ]
-
-    Promise.all(urls.map(url =>
-      fetch(url)               
-        .then(res => res.json())
-    ))
+    fetch(`${window.location}/joinedData/${this.state.timeFrame}`)
+    .then(response => response.json())             
     .then(data => {
-      this.setState({rawData: data}, this.joinData)
+      this.setState({joinedData: data, loading: false})
+    })
+    .catch( err => {
+      console.log(err)
     })
   }
   
@@ -97,11 +81,11 @@ class App extends Component {
             className={classes.mainGrid}
           >
             <Graph rawData={this.state.joinedData} timeFrame={this.state.timeFrame}/>
-            <DataTable {...this.props} rawData={this.state.joinedData} timeFrame={this.state.timeFrame}/>
+            <DataTable setLoader={this.setLoader} rawData={this.state.joinedData} timeFrame={this.state.timeFrame}/>
             <MapVisualization rawData={this.state.joinedData} timeFrame={this.state.timeFrame}/>
           </Grid>
         </Container>
-      
+        {this.state.loading && <CircularProgress className={classes.loader} size={75}/>}
       </div>
     )
   }

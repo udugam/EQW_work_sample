@@ -24,11 +24,12 @@ class DataTable extends Component {
         searchText: '',
         lastEntry: '',
         timeoutId: '',
-        results: [],
+        results: new Set(),
         headings: ['Points of Interest', 'Impressions', 'Clicks', 'Events', 'Revenue', 'Date'],
     }
 
     handleSearchTerm = (event) => {
+        this.props.setLoader(true)
         this.searchData(event.target.value)
     }
 
@@ -48,8 +49,13 @@ class DataTable extends Component {
     shouldComponentUpdate(nextProps,nextState) {
         // The logic here will debounce the render method to improve the performance of the search results
         if(nextState.lastEntry === '') return true  // Initial conditioned needed to render table
-        if(nextState.searchText.length%5 === 0) return true // Render for every 5th character
-        if(Date.now()-nextState.lastEntry > LATENCY) return true
+        else if(nextState.searchText.length !== 0 && nextState.searchText.length%5 === 0) { // Render for every 5th character
+            // this.props.setLoader(false)
+            return true 
+        } else if(Date.now()-nextState.lastEntry > LATENCY) { // Render if LATENCY seconds have elapsed since last input
+            this.props.setLoader(false)
+            return true
+        }
     
         return false
     }

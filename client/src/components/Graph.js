@@ -73,6 +73,10 @@ class Graph extends Component {
     this.setState({metrics},this.massageData)
   }
 
+  componentDidMount() {
+    this.massageData()
+  }
+
   componentDidUpdate(prevProps, prevState) {
     if(prevState.rawData !== this.props.rawData) {
       this.setState({rawData: this.props.rawData}, this.massageData())
