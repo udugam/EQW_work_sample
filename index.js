@@ -33,11 +33,6 @@ app.use((req, res, next) => {
 // https://www.postgresql.org/docs/9.6/static/libpq-envars.html
 const pool = new pg.Pool();
 
-const queryHandler = (req, res, next) => {
-  pool.query(req.sqlQuery).then((r) => res.json(r.rows || []))
-    .catch(next);
-};
-
 //  Serve static assets
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'));
