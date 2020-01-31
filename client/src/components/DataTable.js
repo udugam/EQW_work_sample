@@ -15,8 +15,8 @@ import NumberFormat from 'react-number-format'
 import moment from 'moment'
 import Fuse from 'fuse.js'
 import styles from '../styles.js'
-import debounce from 'lodash.debounce'
 
+const LATENCY = 1000
 
 class DataTable extends Component {
 
@@ -40,7 +40,7 @@ class DataTable extends Component {
         this.setState({results, searchText, lastEntry: Date.now()}, function() {
             // Create timeout to execute render function if input has stopped for a given time
             if(results.size > 0) {
-                let timeoutId = setTimeout(() => this.setState(this.state),1500)
+                let timeoutId = setTimeout(() => this.setState(this.state),LATENCY)
             }
         })
     }
@@ -49,7 +49,7 @@ class DataTable extends Component {
         // The logic here will debounce the render method to improve the performance of the search results
         if(nextState.lastEntry === '') return true  // Initial conditioned needed to render table
         if(nextState.searchText.length%5 === 0) return true // Render for every 5th character
-        if(Date.now()-nextState.lastEntry > 1500) return true
+        if(Date.now()-nextState.lastEntry > LATENCY) return true
     
         return false
     }
