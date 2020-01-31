@@ -34,6 +34,12 @@ const styles = theme => ({
     textField: {
         margin: theme.spacing(1),
         width: 200,
+    },
+    loader: {
+        padding: '20px',
+        position: 'fixed',
+        bottom: '25px',
+        right: '25px'
     }
 })
 

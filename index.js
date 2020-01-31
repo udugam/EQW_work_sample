@@ -7,6 +7,9 @@ const rateLimiter = require('./rateLimiter');
 const reqLimit = 4;
 const reqTimeLimit = 1000;
 
+// Import Utilities
+const dataJoin = require('./utils/dataJoin');
+
 const app = express();
 
 // Add cookie-session middleware to be used for distinguishing requests from more than one client
@@ -40,62 +43,40 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'));
 }
 
+// Sql Queries
+const eventsHourlyQuery = 'SELECT date, hour, events FROM public.hourly_events ORDER BY date, hour LIMIT 168;';
+const eventsDailyQuery = 'SELECT date, SUM(events) AS events FROM public.hourly_events GROUP BY date ORDER BY date LIMIT 7;';
+const statsHourlyQuery = 'SELECT date, hour, impressions, clicks, revenue FROM public.hourly_stats ORDER BY date, hour LIMIT 168;';
+const statsDailyQuery = 'SELECT date, SUM(impressions) AS impressions, SUM(clicks) AS clicks, SUM(revenue) AS revenue FROM public.hourly_stats GROUP BY date ORDER BY date LIMIT 7;';
+const poiQuery = 'SELECT * FROM public.poi;';
+
 app.get('/', (req, res) => {
   res.send('Welcome to EQ Works 😎');
 });
 
-app.get('/events/hourly', (req, res, next) => {
-  req.sqlQuery = `
-    SELECT date, hour, events
-    FROM public.hourly_events
-    ORDER BY date, hour
-    LIMIT 168;
-  `;
-  return next();
-}, queryHandler);
+// This endpoint collects all the data, joins it, and returns it to the client
+app.get('/joinedData/hourly', (req, res) => {
+  Promise.all([pool.query(statsHourlyQuery), pool.query(eventsHourlyQuery), pool.query(poiQuery)])
+    .then((data) => {
+      res.json(dataJoin(data) || []);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json(err);
+    });
+});
 
-app.get('/events/daily', (req, res, next) => {
-  req.sqlQuery = `
-    SELECT date, SUM(events) AS events
-    FROM public.hourly_events
-    GROUP BY date
-    ORDER BY date
-    LIMIT 7;
-  `;
-  return next();
-}, queryHandler);
-
-app.get('/stats/hourly', (req, res, next) => {
-  req.sqlQuery = `
-    SELECT date, hour, impressions, clicks, revenue
-    FROM public.hourly_stats
-    ORDER BY date, hour
-    LIMIT 168;
-  `;
-  return next();
-}, queryHandler);
-
-app.get('/stats/daily', (req, res, next) => {
-  req.sqlQuery = `
-    SELECT date,
-        SUM(impressions) AS impressions,
-        SUM(clicks) AS clicks,
-        SUM(revenue) AS revenue
-    FROM public.hourly_stats
-    GROUP BY date
-    ORDER BY date
-    LIMIT 7;
-  `;
-  return next();
-}, queryHandler);
-
-app.get('/poi', (req, res, next) => {
-  req.sqlQuery = `
-    SELECT *
-    FROM public.poi;
-  `;
-  return next();
-}, queryHandler);
+// This endpoint collects all the data, joins it, and returns it to the client
+app.get('/joinedData/daily', (req, res) => {
+  Promise.all([pool.query(statsDailyQuery), pool.query(eventsDailyQuery), pool.query(poiQuery)])
+    .then((data) => {
+      res.json(dataJoin(data) || []);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json(err);
+    });
+});
 
 app.listen(process.env.PORT || 5555, (err) => {
   if (err) {
