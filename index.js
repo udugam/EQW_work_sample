@@ -4,8 +4,8 @@ const pg = require('pg');
 const rateLimiter = require('./rateLimiter');
 
 //  Define API rate limit here
-const reqLimit = 4;
-const reqTimeLimit = 1000;
+const reqLimit = 3;
+const reqTimeLimit = 2000;
 
 // Import Utilities
 const dataJoin = require('./utils/dataJoin');

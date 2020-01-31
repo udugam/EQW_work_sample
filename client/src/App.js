@@ -13,6 +13,7 @@ import {
   MenuItem,
   CircularProgress
 } from '@material-ui/core';
+import { withSnackbar } from 'notistack'
 
 //Import Custom Components
 import Graph from './components/Graph'
@@ -40,12 +41,17 @@ class App extends Component {
 
   fetchData = () => {
     fetch(`${window.location}/joinedData/${this.state.timeFrame}`)
-    .then(response => response.json())             
-    .then(data => {
-      this.setState({joinedData: data, loading: false})
+    .then(response => {
+      if (!response.ok) throw Error(`${response.status} : ${response.statusText}`);
+      return response;
+    })             
+    .then(response => response.json())
+    .then(response => {
+      this.setState({joinedData: response, loading: false})
     })
     .catch( err => {
       console.log(err)
+      this.props.enqueueSnackbar(err.toString(), {variant: 'error'})
     })
   }
   
@@ -91,4 +97,4 @@ class App extends Component {
   }
 }
 
-export default withStyles(styles)(App);
+export default withStyles(styles)(withSnackbar(App));
